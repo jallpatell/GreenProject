@@ -35,28 +35,28 @@ impl Stable {
         pool_amounts: [u128; 2],    // [0] = src_amount, [1] = dst_amount
         percision_multipliers: [u64; 2], 
         scaled_amount_in: u128, 
-     ) -> u128 {
+     ) -> Option<u128> {
         // stableswap with percision multipliers 
         let xp: Vec<u128> = vec![
             pool_amounts[0] * percision_multipliers[0] as u128,
             pool_amounts[1] * percision_multipliers[1] as u128,
         ];
-        let dx = scaled_amount_in * percision_multipliers[0] as u128;
+        let dx = scaled_amount_in.checked_mul(percision_multipliers[0] as u128)?;
 
-        let x = xp[0] + dx;
-        let leverage = compute_a(self.amp).unwrap();
-        let d = compute_d(leverage, xp[0], xp[1]).unwrap();
-        let y = compute_new_destination_amount(leverage, x, d).unwrap();
-        let dy = xp[1] - y;
-        let out_amount = dy.checked_div(percision_multipliers[1] as u128).unwrap();
+        let x = xp[0].checked_add(dx)?;
+        let leverage = compute_a(self.amp)?;
+        let d = compute_d(leverage, xp[0], xp[1])?;
+        let y = compute_new_destination_amount(leverage, x, d)?;
+        let dy = xp[1].checked_sub(y)?;
+        let out_amount = dy.checked_div(percision_multipliers[1] as u128)?;
 
         // reduce fees at the end
         let fees = out_amount
-            .checked_mul(self.fee_numerator).unwrap()
-            .checked_div(self.fee_denominator).unwrap();
+            .checked_mul(self.fee_numerator)?
+            .checked_div(self.fee_denominator)?;
         
 
-        out_amount - fees
+        out_amount.checked_sub(fees)
     }
 }
 

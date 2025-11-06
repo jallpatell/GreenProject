@@ -149,14 +149,20 @@ pub fn _aldrin_swap_v2<'info>(
 
 #[derive(Accounts)]
 pub struct AldrinSwapV1<'info> {
+    /// CHECK: Passed to Aldrin program via CPI, validated by external program
     pub pool_public_key: AccountInfo<'info>,
+    /// CHECK: Passed to Aldrin program via CPI, validated by external program
     pub pool_signer: AccountInfo<'info>,
+    /// CHECK: Passed to Aldrin program via CPI, validated by external program
     #[account(mut)]
     pub pool_mint: AccountInfo<'info>,
+    /// CHECK: Passed to Aldrin program via CPI, validated by external program
     #[account(mut)]
     pub base_token_vault: AccountInfo<'info>,
+    /// CHECK: Passed to Aldrin program via CPI, validated by external program
     #[account(mut)]
     pub quote_token_vault: AccountInfo<'info>,
+    /// CHECK: Passed to Aldrin program via CPI, validated by external program
     #[account(mut)]
     pub fee_pool_token_account: AccountInfo<'info>,
     pub user_transfer_authority : Signer<'info>,
@@ -164,7 +170,9 @@ pub struct AldrinSwapV1<'info> {
     pub user_base_ata: Account<'info, TokenAccount>,
     #[account(mut)]
     pub user_quote_ata: Account<'info, TokenAccount>,
+    /// CHECK: Program ID for Aldrin V1, validated by instruction execution
     pub aldrin_v1_program: AccountInfo<'info>,
+    /// CHECK: SPL Token program, standard program ID
     pub token_program: AccountInfo<'info>,
     #[account(mut, seeds=[b"swap_state"], bump)] 
     pub swap_state: Account<'info, SwapState>,
@@ -172,14 +180,20 @@ pub struct AldrinSwapV1<'info> {
 
 #[derive(Accounts)]
 pub struct AldrinSwapV2<'info> {
+    /// CHECK: Passed to Aldrin program via CPI, validated by external program
     pub pool_public_key: AccountInfo<'info>,
+    /// CHECK: Passed to Aldrin program via CPI, validated by external program
     pub pool_signer: AccountInfo<'info>,
+    /// CHECK: Passed to Aldrin program via CPI, validated by external program
     #[account(mut)]
     pub pool_mint: AccountInfo<'info>,
+    /// CHECK: Passed to Aldrin program via CPI, validated by external program
     #[account(mut)]
     pub base_token_vault: AccountInfo<'info>,
+    /// CHECK: Passed to Aldrin program via CPI, validated by external program
     #[account(mut)]
     pub quote_token_vault: AccountInfo<'info>,
+    /// CHECK: Passed to Aldrin program via CPI, validated by external program
     #[account(mut)]
     pub fee_pool_token_account: AccountInfo<'info>,
     pub user_transfer_authority : Signer<'info>,
@@ -187,8 +201,11 @@ pub struct AldrinSwapV2<'info> {
     pub user_base_ata: Account<'info, TokenAccount>,
     #[account(mut)]
     pub user_quote_ata: Account<'info, TokenAccount>,
+    /// CHECK: Program ID for Aldrin V2, validated by instruction execution
     pub aldrin_v2_program: AccountInfo<'info>,
+    /// CHECK: Passed to Aldrin program via CPI, validated by external program
     pub curve: AccountInfo<'info>, // v2 difference! 
+    /// CHECK: SPL Token program, standard program ID
     pub token_program: AccountInfo<'info>,
     #[account(mut, seeds=[b"swap_state"], bump)] 
     pub swap_state: Account<'info, SwapState>,

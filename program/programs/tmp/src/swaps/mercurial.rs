@@ -60,19 +60,25 @@ pub fn _mercurial_swap<'info>(
 
 #[derive(Accounts)]
 pub struct MercurialSwap<'info> {
+    /// CHECK: Passed to Mercurial program via CPI, validated by external program
     #[account(mut)]
     pub pool_account: AccountInfo<'info>,
+    /// CHECK: Passed to Mercurial program via CPI, validated by external program
     pub authority: AccountInfo<'info>,
     pub user_transfer_authority : Signer<'info>,
     #[account(mut)]
     pub user_src: Account<'info, TokenAccount>,
+    /// CHECK: Passed to Mercurial program via CPI, validated by external program
     #[account(mut)]
     pub pool_src: AccountInfo<'info>,
+    /// CHECK: Passed to Mercurial program via CPI, validated by external program
     #[account(mut)]
     pub pool_dst: AccountInfo<'info>,
     #[account(mut)]
     pub user_dst: Account<'info, TokenAccount>,
+    /// CHECK: SPL Token program, standard program ID
     pub token_program: AccountInfo<'info>,
+    /// CHECK: Program ID for Mercurial swap, validated by instruction execution
     pub mercurial_swap_program: AccountInfo<'info>,
     #[account(mut, seeds=[b"swap_state"], bump)] 
     pub swap_state: Account<'info, SwapState>,

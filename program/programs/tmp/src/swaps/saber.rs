@@ -63,14 +63,18 @@ pub fn _saber_swap<'info>(
 
 #[derive(Accounts, Clone)]
 pub struct SaberSwap<'info> {
+    /// CHECK: Passed to Saber program via CPI, validated by external program
     #[account(mut)]
     pub pool_account: AccountInfo<'info>,
+    /// CHECK: Passed to Saber program via CPI, validated by external program
     pub authority: AccountInfo<'info>,
     pub user_transfer_authority : Signer<'info>,
     #[account(mut)]
     pub user_src: Account<'info, TokenAccount>,
+    /// CHECK: Passed to Saber program via CPI, validated by external program
     #[account(mut)]
     pub pool_src: AccountInfo<'info>,
+    /// CHECK: Passed to Saber program via CPI, validated by external program
     #[account(mut)]
     pub pool_dst: AccountInfo<'info>,
     #[account(mut)]
@@ -78,8 +82,10 @@ pub struct SaberSwap<'info> {
     #[account(mut)]
     pub fee_dst: Account<'info, TokenAccount>,
     // ...
+    /// CHECK: Program ID for Saber swap, validated by instruction execution
     pub saber_swap_program: AccountInfo<'info>,
     #[account(mut, seeds=[b"swap_state"], bump)] 
     pub swap_state: Account<'info, SwapState>,
+    /// CHECK: SPL Token program, standard program ID
     pub token_program: AccountInfo<'info>,
 }

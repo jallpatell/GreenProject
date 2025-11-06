@@ -89,9 +89,15 @@ impl PoolOperations for SaberPool {
             fee_denominator: self.fee_denominator as u128,
         };
 
-        let pool_src_amount = self.pool_amounts.get(&mint_in.to_string()).unwrap();
-        let pool_dst_amount = self.pool_amounts.get(&mint_out.to_string()).unwrap();
-        let pool_amounts = [*pool_src_amount, *pool_dst_amount];
+        let pool_src_amount = match self.pool_amounts.get(&mint_in.to_string()) {
+            Some(amount) => *amount,
+            None => return 0,
+        };
+        let pool_dst_amount = match self.pool_amounts.get(&mint_out.to_string()) {
+            Some(amount) => *amount,
+            None => return 0,
+        };
+        let pool_amounts = [pool_src_amount, pool_dst_amount];
         let percision_multipliers = [1, 1];
 
         
@@ -99,7 +105,7 @@ impl PoolOperations for SaberPool {
             pool_amounts,    
             percision_multipliers, 
             scaled_amount_in 
-        )
+        ).unwrap_or(0)
 
     }
 

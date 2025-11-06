@@ -15,7 +15,7 @@ use std::rc::Rc;
 
 use std::vec;
 
-use log::info;
+use log::{info, debug};
 
 use tmp::accounts as tmp_accounts;
 use tmp::instruction as tmp_ix;
@@ -74,9 +74,30 @@ impl Arbitrager {
             let dst_mint = self.token_mints[dst_mint_idx];
 
             for pool in pools {
-                let new_balance =
-                    pool.0
-                        .get_quote_with_amounts_scaled(curr_balance, &src_mint, &dst_mint);
+                // Check if pool can trade before calculating quote
+                if !pool.0.can_trade(&src_mint, &dst_mint) {
+                    continue;
+                }
+
+                // Try to get quote, catch panics and continue
+                let new_balance = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+                    pool.0.get_quote_with_amounts_scaled(curr_balance, &src_mint, &dst_mint)
+                }));
+
+                let new_balance = match new_balance {
+                    Ok(balance) => balance,
+                    Err(_) => {
+                        // Quote calculation failed, skip this pool
+                        debug!("Quote calculation failed for pool {}: {} -> {}", 
+                               pool.0.get_name(), src_mint, dst_mint);
+                        continue;
+                    }
+                };
+
+                // Skip if quote is 0 or invalid
+                if new_balance == 0 {
+                    continue;
+                }
 
                 let mut new_path = path.clone();
                 new_path.push(dst_mint_idx);
@@ -90,7 +111,19 @@ impl Arbitrager {
                     // if new_balance > init_balance - 1086310399 {
                     if new_balance > init_balance {
                         // ... profitable arb!
-                        info!("found arbitrage: {:?} -> {:?}", init_balance, new_balance);
+                        // Calculate spread percentage and profit
+                        let profit = new_balance - init_balance;
+                        let spread_percentage = if init_balance > 0 {
+                            // Calculate percentage: (profit / init_balance) * 100
+                            // Use fixed-point arithmetic to avoid floating point
+                            let percentage_scaled = (profit as u128 * 10000) / init_balance;
+                            percentage_scaled as f64 / 100.0
+                        } else {
+                            0.0
+                        };
+                        
+                        info!("found arbitrage: {} -> {} | Profit: {} | Spread: {:.4}%", 
+                              init_balance, new_balance, profit, spread_percentage);
 
                         // check if arb was sent with a larger size
                         // key = {mint_path}{pool_names}

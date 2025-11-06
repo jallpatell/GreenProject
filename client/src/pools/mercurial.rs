@@ -90,14 +90,22 @@ impl PoolOperations for MercurialPool {
         };
 
         // only stable swap pools here 
-        let pool_src_amount = self.pool_amounts.get(&mint_in.to_string()).unwrap();
-        let pool_dst_amount = self.pool_amounts.get(&mint_out.to_string()).unwrap();
-        let pool_amounts = [*pool_src_amount, *pool_dst_amount];
+        let pool_src_amount = match self.pool_amounts.get(&mint_in.to_string()) {
+            Some(amount) => *amount,
+            None => return 0,
+        };
+        let pool_dst_amount = match self.pool_amounts.get(&mint_out.to_string()) {
+            Some(amount) => *amount,
+            None => return 0,
+        };
+        let pool_amounts = [pool_src_amount, pool_dst_amount];
 
-        let input_idx = self.token_ids
+        let input_idx = match self.token_ids
             .iter()
-            .position(|m| *m == mint_in.to_string())
-            .unwrap();
+            .position(|m| *m == mint_in.to_string()) {
+            Some(idx) => idx,
+            None => return 0,
+        };
         let output_idx = (input_idx + 1) % 2; 
 
         let percision_multipliers = [
@@ -111,7 +119,7 @@ impl PoolOperations for MercurialPool {
             pool_amounts,    
             percision_multipliers, 
             scaled_amount_in 
-        )
+        ).unwrap_or(0)
     }
 
     fn get_name(&self) -> String {

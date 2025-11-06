@@ -64,22 +64,30 @@ pub fn _orca_swap<'info>(
 
 #[derive(Accounts)]
 pub struct OrcaSwap<'info> {
+    /// CHECK: Passed to Orca program via CPI, validated by external program
     pub token_swap: AccountInfo<'info>,
+    /// CHECK: Passed to Orca program via CPI, validated by external program
     pub authority: AccountInfo<'info>,
     pub user_transfer_authority : Signer<'info>,
     #[account(mut)]
     pub user_src: Account<'info, TokenAccount>,
+    /// CHECK: Passed to Orca program via CPI, validated by external program
     #[account(mut)]
     pub pool_src: AccountInfo<'info>,
+    /// CHECK: Passed to Orca program via CPI, validated by external program
     #[account(mut)]
     pub pool_dst: AccountInfo<'info>,
     #[account(mut)]
     pub user_dst: Account<'info, TokenAccount>,
+    /// CHECK: Passed to Orca program via CPI, validated by external program
     #[account(mut)]
     pub pool_mint: AccountInfo<'info>,
+    /// CHECK: Passed to Orca program via CPI, validated by external program
     #[account(mut)]
     pub fee_account: AccountInfo<'info>,
+    /// CHECK: SPL Token program, standard program ID
     pub token_program: AccountInfo<'info>,
+    /// CHECK: Program ID for Orca swap, validated by instruction execution
     pub token_swap_program: AccountInfo<'info>,
     #[account(mut, seeds=[b"swap_state"], bump)] 
     pub swap_state: Account<'info, SwapState>,

@@ -42,12 +42,17 @@ pub fn _serum_swap<'info>(
 
 #[derive(Accounts)]
 pub struct InitOpenOrder<'info> {
+    /// CHECK: Passed to Serum DEX program via CPI, validated by external program
     #[account(mut)]
     pub open_orders: AccountInfo<'info>,
+    /// CHECK: Signer account, validated by Anchor
     #[account(signer)]
     pub authority: AccountInfo<'info>,
+    /// CHECK: Passed to Serum DEX program via CPI, validated by external program
     pub market: AccountInfo<'info>,
+    /// CHECK: Program ID for Serum DEX, validated by instruction execution
     pub dex_program: AccountInfo<'info>,
+    /// CHECK: Sysvar rent account, standard Solana sysvar
     pub rent: AccountInfo<'info>,
 }
 
@@ -64,13 +69,18 @@ impl<'info> From<&mut InitOpenOrder<'info>> for dex::InitOpenOrders<'info> {
 
 #[derive(Accounts)]
 pub struct CloseAccount<'info> {
+    /// CHECK: Passed to Serum DEX program via CPI, validated by external program
     #[account(mut)]
     open_orders: AccountInfo<'info>,
+    /// CHECK: Signer account, validated by Anchor
     #[account(signer)]
     authority: AccountInfo<'info>,
+    /// CHECK: Passed to Serum DEX program via CPI, validated by external program
     #[account(mut)]
     destination: AccountInfo<'info>,
+    /// CHECK: Passed to Serum DEX program via CPI, validated by external program
     market: AccountInfo<'info>,
+    /// CHECK: Program ID for Serum DEX, validated by instruction execution
     dex_program: AccountInfo<'info>,
 }
 
@@ -91,14 +101,18 @@ impl<'info> From<&mut CloseAccount<'info>> for dex::CloseOpenOrders<'info> {
 #[derive(Accounts)]
 pub struct SerumSwap<'info> {
     pub market: MarketAccounts<'info>,
+    /// CHECK: Signer account, validated by Anchor
     #[account(signer)]
     pub authority: AccountInfo<'info>,
     #[account(mut)]
     pub pc_wallet: Account<'info, TokenAccount>, // !! 
     // Programs.
+    /// CHECK: Program ID for Serum DEX, validated by instruction execution
     pub dex_program: AccountInfo<'info>,
+    /// CHECK: SPL Token program, standard program ID
     pub token_program: AccountInfo<'info>,
     // Sysvars.
+    /// CHECK: Sysvar rent account, standard Solana sysvar
     pub rent: AccountInfo<'info>,
     #[account(mut, seeds=[b"swap_state"], bump, )] 
     pub swap_state: Account<'info, SwapState>,
@@ -121,10 +135,15 @@ impl<'info> From<&SerumSwap<'info>> for OrderbookClient<'info> {
 #[derive(Clone)]
 struct OrderbookClient<'info> {
     market: MarketAccounts<'info>,
+    /// CHECK: Signer account, validated by Anchor
     authority: AccountInfo<'info>,
+    /// CHECK: Passed to Serum DEX program via CPI, validated by external program
     pc_wallet: AccountInfo<'info>,
+    /// CHECK: Program ID for Serum DEX, validated by instruction execution
     dex_program: AccountInfo<'info>,
+    /// CHECK: SPL Token program, standard program ID
     token_program: AccountInfo<'info>,
+    /// CHECK: Sysvar rent account, standard Solana sysvar
     rent: AccountInfo<'info>,
 }
 
@@ -265,33 +284,43 @@ fn coin_lots(market: &MarketState, size: u64) -> u64 {
 // common accounts, i.e., program ids, sysvars, and the `pc_wallet`.
 #[derive(Accounts, Clone)]
 pub struct MarketAccounts<'info> {
+    /// CHECK: Passed to Serum DEX program via CPI, validated by external program
     #[account(mut)]
     pub market: AccountInfo<'info>,
+    /// CHECK: Passed to Serum DEX program via CPI, validated by external program
     #[account(mut)]
     pub open_orders: AccountInfo<'info>,
+    /// CHECK: Passed to Serum DEX program via CPI, validated by external program
     #[account(mut)]
     pub request_queue: AccountInfo<'info>,
+    /// CHECK: Passed to Serum DEX program via CPI, validated by external program
     #[account(mut)]
     pub event_queue: AccountInfo<'info>,
+    /// CHECK: Passed to Serum DEX program via CPI, validated by external program
     #[account(mut)]
     pub bids: AccountInfo<'info>,
+    /// CHECK: Passed to Serum DEX program via CPI, validated by external program
     #[account(mut)]
     pub asks: AccountInfo<'info>,
     // The `spl_token::Account` that funds will be taken from, i.e., transferred
     // from the user into the market's vault.
     //
     // For bids, this is the base currency. For asks, the quote.
+    /// CHECK: Passed to Serum DEX program via CPI, validated by external program
     #[account(mut)]
     pub order_payer_token_account: AccountInfo<'info>,
     // Also known as the "base" currency. For a given A/B market,
     // this is the vault for the A mint.
+    /// CHECK: Passed to Serum DEX program via CPI, validated by external program
     #[account(mut)]
     pub coin_vault: AccountInfo<'info>,
     // Also known as the "quote" currency. For a given A/B market,
     // this is the vault for the B mint.
+    /// CHECK: Passed to Serum DEX program via CPI, validated by external program
     #[account(mut)]
     pub pc_vault: AccountInfo<'info>,
     // PDA owner of the DEX's token accounts for base + quote currencies.
+    /// CHECK: Passed to Serum DEX program via CPI, validated by external program
     pub vault_signer: AccountInfo<'info>,
     // User wallets.
     #[account(mut)]
