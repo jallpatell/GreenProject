@@ -56,6 +56,10 @@ pub trait PoolOperations: Debug {
     fn mint_2_addr(&self, mint: &Pubkey) -> Pubkey;
     fn get_mints(&self) -> Vec<Pubkey>;
     fn mint_2_scale(&self, mint: &Pubkey) -> u64;
+    
+    /// Get the pool's main address/pubkey (used for whitelisting)
+    /// This is the unique identifier for the pool
+    fn get_pool_address(&self) -> Pubkey;
 
     fn get_quote_with_amounts_scaled(
         &self,
@@ -72,6 +76,11 @@ pub trait PoolOperations: Debug {
     ) -> Vec<Instruction>;
 
     fn can_trade(&self, mint_in: &Pubkey, mint_out: &Pubkey) -> bool; // used for tests
+    
+    /// ** PRODUCTION-GRADE: Get pool reserve amounts for price impact calculation
+    /// Returns: (reserve_in, reserve_out) for the given token pair
+    /// Returns None if reserves are not available or invalid
+    fn get_pool_reserves(&self, mint_in: &Pubkey, mint_out: &Pubkey) -> Option<(u128, u128)>;
 }
 
 // clone_trait_object!(PoolOperations);

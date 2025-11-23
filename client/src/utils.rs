@@ -3,7 +3,7 @@ use crate::pool::PoolOperations;
 use anchor_client::solana_sdk::pubkey::Pubkey;
 use std::collections::HashMap;
 use std::fs;
-use std::rc::Rc;
+use std::sync::{Arc, Mutex};
 use std::str::FromStr;
 
 pub fn read_json_dir(dir: &String) -> Vec<String> {
@@ -41,12 +41,20 @@ pub fn derive_token_address(owner: &Pubkey, mint: &Pubkey) -> Pubkey {
     pda
 }
 
+/// PoolQuote wraps a pool in Arc<Mutex<>> to allow thread-safe mutable access.
+/// This enables real-time updates via websocket without rebuilding the graph.
+/// The graph structure remains stable - only pool data is updated in place.
 #[derive(Debug, Clone)]
-pub struct PoolQuote(pub Rc<Box<dyn PoolOperations>>);
+pub struct PoolQuote(pub Arc<Mutex<Box<dyn PoolOperations>>>);
 
 impl PoolQuote {
-    pub fn new(quote: Rc<Box<dyn PoolOperations>>) -> Self {
+    pub fn new(quote: Arc<Mutex<Box<dyn PoolOperations>>>) -> Self {
         Self(quote)
+    }
+    
+    /// Get a reference to the inner pool (for read operations)
+    pub fn get_pool(&self) -> &Arc<Mutex<Box<dyn PoolOperations>>> {
+        &self.0
     }
 }
 

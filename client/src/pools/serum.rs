@@ -209,8 +209,10 @@ impl PoolOperations for SerumPool {
                 "./serum_open_orders.json"
             }, 
             Cluster::Mainnet => {
-                panic!("TODO"); // idk 
-                "./serum_open_orders.json"
+                // For mainnet, skip open orders setup (not needed for dry-run mode)
+                // Open orders are only needed for actual trading, not for quote calculations
+                // Note: Open orders setup skipped for mainnet (not needed for dry-run mode)
+                return; // Skip open orders setup for mainnet
             },
             _ => panic!("clsuter {} not supported", cluster)
         };
@@ -230,6 +232,18 @@ impl PoolOperations for SerumPool {
         ];
         mints.sort();
         mints
+    }
+    
+    fn get_pool_address(&self) -> Pubkey {
+        self.own_address.0
+    }
+    
+    fn get_pool_reserves(&self, _mint_in: &Pubkey, _mint_out: &Pubkey) -> Option<(u128, u128)> {
+        // Serum pools use order books, not AMM reserves
+        // Price impact calculation for order books requires simulating order book depth
+        // For now, return None to indicate price impact cannot be calculated
+        // This is acceptable since Serum pools are less common and main issue is with AMM pools
+        None
     }
 
     fn mint_2_scale(&self, mint: &Pubkey) -> u64 {
@@ -317,8 +331,12 @@ impl PoolOperations for SerumPool {
         mint_in: &Pubkey, 
         _mint_out: &Pubkey
     ) -> Vec<Instruction> {
-
-        let oos = self.open_orders.as_ref().unwrap(); 
+        // Open orders are required for Serum swaps on mainnet
+        // This should only be called when open_orders are set up
+        let oos = self.open_orders.as_ref().expect(
+            "Serum swap_ix called but open_orders not set up. Open orders are required for Serum swaps on mainnet. \
+             Use setup_open_orders or ensure open_orders are loaded before calling swap_ix."
+        ); 
         let open_orders = Pubkey::from_str(
             oos.get(&self.own_address.0.to_string()).unwrap()
         ).unwrap();

@@ -12,6 +12,7 @@ use anchor_client::Program;
 
 use solana_sdk::account::Account;
 use solana_sdk::instruction::Instruction;
+use log::{warn, debug};
 
 use tmp::accounts as tmp_accounts;
 use tmp::instruction as tmp_ix;
@@ -101,11 +102,21 @@ impl PoolOperations for SaberPool {
         let percision_multipliers = [1, 1];
 
         
-        calculator.get_quote(
+        // Handle calculator errors properly - log when calculation fails
+        match calculator.get_quote(
             pool_amounts,    
             percision_multipliers, 
             scaled_amount_in 
-        ).unwrap_or(0)
+        ) {
+            Some(quote) => quote,
+            None => {
+                // Calculator returned None - this indicates a calculation error
+                // Log it for debugging but don't panic
+                debug!("Saber pool calculator returned None for {} -> {}. This may indicate invalid pool amounts or calculation overflow.", 
+                       mint_in, mint_out);
+                0
+            }
+        }
 
     }
 
@@ -128,14 +139,59 @@ impl PoolOperations for SaberPool {
         let id0 = &ids[0];
         let id1 = &ids[1];
         
-        let acc_data0 = &accounts[0].as_ref().unwrap().data;
-        let acc_data1 = &accounts[1].as_ref().unwrap().data;
+        // Handle missing accounts properly - this indicates pool accounts weren't fetched
+        if accounts.len() < 2 {
+            warn!("Saber pool set_update_accounts: Expected 2 accounts but got {}. Pool may not have been fetched correctly.", accounts.len());
+            return;
+        }
+        
+        // Handle None accounts properly
+        let acc_data0 = match &accounts[0] {
+            Some(acc) => &acc.data,
+            None => {
+                warn!("Saber pool set_update_accounts: Account 0 is None. Pool account may not exist.");
+                return;
+            }
+        };
+        let acc_data1 = match &accounts[1] {
+            Some(acc) => &acc.data,
+            None => {
+                warn!("Saber pool set_update_accounts: Account 1 is None. Pool account may not exist.");
+                return;
+            }
+        };
 
-        let amount0 = unpack_token_account(acc_data0).amount as u128;
-        let amount1 = unpack_token_account(acc_data1).amount as u128;
+        // Validate account data before unpacking (165 bytes for SPL Token account)
+        const TOKEN_ACCOUNT_DATA_SIZE: usize = 165;
+        if acc_data0.len() != TOKEN_ACCOUNT_DATA_SIZE {
+            warn!("Saber pool set_update_accounts: Account 0 has invalid data size: {} bytes (expected {}).", acc_data0.len(), TOKEN_ACCOUNT_DATA_SIZE);
+            return;
+        }
+        if acc_data1.len() != TOKEN_ACCOUNT_DATA_SIZE {
+            warn!("Saber pool set_update_accounts: Account 1 has invalid data size: {} bytes (expected {}).", acc_data1.len(), TOKEN_ACCOUNT_DATA_SIZE);
+            return;
+        }
 
+        // Try to unpack - if it fails, the data is corrupted
+        let amount0_result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+            unpack_token_account(acc_data0).amount as u128
+        }));
+        let amount1_result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+            unpack_token_account(acc_data1).amount as u128
+        }));
+
+        match (amount0_result, amount1_result) {
+            (Ok(amount0), Ok(amount1)) => {
         self.pool_amounts.insert(id0.clone(), amount0);
         self.pool_amounts.insert(id1.clone(), amount1);
+            }
+            (Err(_), _) => {
+                warn!("Saber pool set_update_accounts: Failed to unpack account 0. Account data may be corrupted.");
+            }
+            (_, Err(_)) => {
+                warn!("Saber pool set_update_accounts: Failed to unpack account 1. Account data may be corrupted.");
+            }
+        }
     }
 
     fn can_trade(&self, 
@@ -173,5 +229,15 @@ impl PoolOperations for SaberPool {
         // sort so that its consistent across different pools 
         mints.sort();
         mints
+    }
+    
+    fn get_pool_address(&self) -> Pubkey {
+        self.pool_account.0
+    }
+    
+    fn get_pool_reserves(&self, mint_in: &Pubkey, mint_out: &Pubkey) -> Option<(u128, u128)> {
+        let reserve_in = self.pool_amounts.get(&mint_in.to_string())?;
+        let reserve_out = self.pool_amounts.get(&mint_out.to_string())?;
+        Some((*reserve_in, *reserve_out))
     }
 }

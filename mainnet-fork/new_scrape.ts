@@ -46,7 +46,36 @@ export const AccountLayout = struct<token.AccountInfo>([
 
 async function main() {    
     
-    let connection = new web3.Connection("https://ssc-dao.genesysgo.net");
+    // Use RPC endpoint that supports getProgramAccounts
+    // Standard RPC doesn't support getProgramAccounts for large programs
+    // Try multiple endpoints in order of preference
+    let rpcEndpoints = [
+        "https://ssc-dao.genesysgo.net",
+        "https://api.mainnet-beta.solana.com",
+        "https://solana-api.projectserum.com"
+    ];
+    
+    let connection: web3.Connection | null = null;
+    let connectionError: Error | null = null;
+    
+    for (let endpoint of rpcEndpoints) {
+        try {
+            console.log(`Trying RPC endpoint: ${endpoint}`);
+            connection = new web3.Connection(endpoint);
+            // Test connection with a simple call
+            await connection.getSlot();
+            console.log(`✓ Connected to ${endpoint}`);
+            break;
+        } catch (err: any) {
+            console.log(`✗ Failed to connect to ${endpoint}: ${err.message}`);
+            connectionError = err;
+            continue;
+        }
+    }
+    
+    if (!connection) {
+        throw new Error(`Failed to connect to any RPC endpoint. Last error: ${connectionError?.message}`);
+    }
     let programs = [];
     let accounts = [];
     let mints = [];
@@ -71,12 +100,19 @@ async function main() {
         accounts.push(pool.poolTokenMint);
         accounts.push(pool.feeAccount);    
     });
+    // Try to get program accounts, but skip if RPC doesn't support it
+    try {
     let prog_accs = await connection.getProgramAccounts(new web3.PublicKey(orca_pid))
     prog_accs.forEach(v => {
         accounts.push(v.pubkey.toString())
         orca_count += 1
     })
-    console.log("orca count", orca_count)
+        console.log("orca program accounts count", prog_accs.length)
+    } catch (err: any) {
+        console.warn(`Warning: getProgramAccounts failed for Orca (${orca_pid}): ${err.message}`);
+        console.warn("Continuing with pool accounts from JSON files only...");
+    }
+    console.log("orca pools from JSON", orca_count)
 
     // MERCURIAL POOL SETUP 
     let mercurial_pid = "MERLuDFBMmsHnsBPZw2sDQZHvXFMwp8EdjudcU2HKky";

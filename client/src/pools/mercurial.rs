@@ -11,6 +11,7 @@ use anchor_client::Program;
 
 use solana_sdk::account::Account;
 use solana_sdk::instruction::Instruction;
+use log::debug;
 
 use tmp::accounts as tmp_accounts;
 use tmp::instruction as tmp_ix;
@@ -115,11 +116,21 @@ impl PoolOperations for MercurialPool {
 
         
 
-        calculator.get_quote(
+        // Handle calculator errors properly - log when calculation fails
+        match calculator.get_quote(
             pool_amounts,    
             percision_multipliers, 
             scaled_amount_in 
-        ).unwrap_or(0)
+        ) {
+            Some(quote) => quote,
+            None => {
+                // Calculator returned None - this indicates a calculation error
+                // Log it for debugging but don't panic
+                debug!("Mercurial pool calculator returned None for {} -> {}. This may indicate invalid pool amounts or calculation overflow.", 
+                       mint_in, mint_out);
+                0
+            }
+        }
     }
 
     fn get_name(&self) -> String {
@@ -187,5 +198,15 @@ impl PoolOperations for MercurialPool {
         // sort so that its consistent across different pools 
         mints.sort();
         mints
+    }
+    
+    fn get_pool_address(&self) -> Pubkey {
+        self.pool_account.0
+    }
+    
+    fn get_pool_reserves(&self, mint_in: &Pubkey, mint_out: &Pubkey) -> Option<(u128, u128)> {
+        let reserve_in = self.pool_amounts.get(&mint_in.to_string())?;
+        let reserve_out = self.pool_amounts.get(&mint_out.to_string())?;
+        Some((*reserve_in, *reserve_out))
     }
 }

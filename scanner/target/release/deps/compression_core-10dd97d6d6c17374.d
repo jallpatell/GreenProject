@@ -1,0 +1,10 @@
+/Users/jal/Documents/projects/SolProjects/solana-arbitrage-bot/scanner/target/release/deps/compression_core-10dd97d6d6c17374.d: /Users/jal/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/compression-core-0.4.29/src/lib.rs /Users/jal/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/compression-core-0.4.29/src/level.rs /Users/jal/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/compression-core-0.4.29/src/unshared.rs /Users/jal/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/compression-core-0.4.29/src/util.rs
+
+/Users/jal/Documents/projects/SolProjects/solana-arbitrage-bot/scanner/target/release/deps/libcompression_core-10dd97d6d6c17374.rlib: /Users/jal/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/compression-core-0.4.29/src/lib.rs /Users/jal/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/compression-core-0.4.29/src/level.rs /Users/jal/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/compression-core-0.4.29/src/unshared.rs /Users/jal/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/compression-core-0.4.29/src/util.rs
+
+/Users/jal/Documents/projects/SolProjects/solana-arbitrage-bot/scanner/target/release/deps/libcompression_core-10dd97d6d6c17374.rmeta: /Users/jal/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/compression-core-0.4.29/src/lib.rs /Users/jal/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/compression-core-0.4.29/src/level.rs /Users/jal/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/compression-core-0.4.29/src/unshared.rs /Users/jal/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/compression-core-0.4.29/src/util.rs
+
+/Users/jal/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/compression-core-0.4.29/src/lib.rs:
+/Users/jal/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/compression-core-0.4.29/src/level.rs:
+/Users/jal/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/compression-core-0.4.29/src/unshared.rs:
+/Users/jal/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/compression-core-0.4.29/src/util.rs:

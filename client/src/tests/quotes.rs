@@ -258,7 +258,6 @@ fn test_pool_quote(
                     println!("quote: {amount_in} -> {quote_out_amount}");
                     println!("logs: {:#?}", s.value.logs);
                     panic!("ahhh");
-                    1
                 }, 
                 None => {
                     // parse logs for last output amount 
@@ -292,7 +291,6 @@ fn test_pool_quote(
             println!("pool path: {}", pool_path);
             println!("quote: {} -> {}", amount_in, quote_out_amount);
             panic!("ahhh");
-            1
         }
     }
 

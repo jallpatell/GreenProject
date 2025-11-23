@@ -6,7 +6,8 @@ pub mod error;
 pub mod pool; 
 pub mod constants; 
 pub mod tests;
-pub mod pools; 
+pub mod pools;
+pub mod websocket; 
 
 #[macro_use]
 extern crate lazy_static;

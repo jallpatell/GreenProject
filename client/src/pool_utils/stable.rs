@@ -344,7 +344,7 @@ impl CurveCalculator for StableCurve {
                 swap_token_b_amount,
             )?)
         }
-        #[cfg(any(test, feature = "fuzz"))]
+        #[cfg(test)]
         {
             use roots::{find_roots_cubic_normalized, Roots};
             let x = swap_token_a_amount as f64;

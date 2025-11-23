@@ -1,0 +1,8 @@
+[scanner]
+spread_threshold = 0.001  # 0.1% minimum spread
+cycle_delay_ms = 500      # Delay between cycles (milliseconds)
+log_file = "logs/arbitrage_log.jsonl"
+
+[dexes]
+enabled = ["Jupiter", "Birdeye", "DexScreener", "Raydium", "Orca", "Meteora", "Phoenix", "OpenBook", "FluxBeam"]
+

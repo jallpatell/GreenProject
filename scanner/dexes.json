@@ -1,0 +1,27 @@
+[
+  {
+    "name": "Jupiter",
+    "url": "https://lite-api.jup.ag/price/v3?ids=",
+    "requires_address": true,
+    "response_path": null
+  },
+  {
+    "name": "Birdeye",
+    "url": "https://public-api.birdeye.so/public/price?address=",
+    "requires_address": true,
+    "response_path": "data.value"
+  },
+  {
+    "name": "DexScreener",
+    "url": "https://api.dexscreener.com/latest/dex/tokens/",
+    "requires_address": true,
+    "response_path": "pairs.0.priceUsd"
+  },
+  {
+    "name": "CoinGecko",
+    "url": "https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd",
+    "requires_address": false,
+    "response_path": null
+  }
+]
+

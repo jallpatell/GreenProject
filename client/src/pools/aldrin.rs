@@ -248,6 +248,14 @@ impl PoolOperations for AldrinPool {
         mints.sort();
         mints
     }
-
-
+    
+    fn get_pool_address(&self) -> Pubkey {
+        self.pool_public_key.0
+    }
+    
+    fn get_pool_reserves(&self, mint_in: &Pubkey, mint_out: &Pubkey) -> Option<(u128, u128)> {
+        let reserve_in = self.pool_amounts.get(&mint_in.to_string())?;
+        let reserve_out = self.pool_amounts.get(&mint_out.to_string())?;
+        Some((*reserve_in, *reserve_out))
+    }
 }

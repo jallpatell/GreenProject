@@ -47,13 +47,21 @@ pub fn get_pool_quote_with_amounts(
             curve_type: CurveType::Stable,
             calculator: Arc::new(StableCurve { amp }),
         };
-        quote = swap_curve.swap(
+        // Handle swap calculation errors properly - None means calculation failed
+        match swap_curve.swap(
             amount_in, 
             input_token_pool_amount, 
             output_token_pool_amount, 
             trade_direction, 
             fees
-        ).unwrap().destination_amount_swapped;
+        ) {
+            Some(swap_result) => quote = swap_result.destination_amount_swapped,
+            None => {
+                // Swap calculation returned None - this can happen with invalid pool amounts
+                // Return error instead of panicking
+                return Err(anyhow::anyhow!("Stable swap calculation returned None. This may indicate invalid pool amounts or parameters."));
+            }
+        }
 
     } else {
         panic!("invalid curve type for swap: {:?}", curve_type);
