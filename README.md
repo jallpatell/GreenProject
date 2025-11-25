@@ -4,7 +4,7 @@ This README documents **all major improvements, new modules, production features
 
 ---
 
-# 📘 Overview
+# Overview
 
 This fork transforms the original arbitrage bot from a simple proof‑of‑concept into a **production‑ready, multi‑DEX, real‑time arbitrage system** with:
 
@@ -94,7 +94,7 @@ scanner/src/saber_pools.rs
 
 Multiple critical improvements were added to ensure safe, profitable, and predictable execution.
 
-## 🔹 Gas Cost Accounting
+## Gas Cost Accounting
 
 Predicts exact network fees including:
 
@@ -371,7 +371,7 @@ This fork transforms the original arbitrage bot into a truly production-level sy
 
 
 
-# 🆕 Major New Modules & Features
+# Major New Modules & Features
 
 ## 1. 🛰️ Price Scanner Module (`scanner/`)
 
@@ -416,7 +416,7 @@ HashMap<String, HashMap<String, f64>> // token → dex → price
 
 ---
 
-## 2. 🧮 Saber Stableswap Pool Integration
+## 2. Saber Stableswap Pool Integration
 
 Location: `scanner/src/saber_pools.rs`
 
@@ -500,7 +500,7 @@ Includes:
 
 ---
 
-# 🔧 Enhanced Pool Operations
+# Enhanced Pool Operations
 
 ### 1. Pool Reserves Fetching API
 
@@ -520,7 +520,7 @@ fn get_pool_address(&self) -> Pubkey
 
 ---
 
-# 🐛 Bug Fixes
+# Bug Fixes
 
 ### DexScreener Empty Response Crash
 
@@ -540,7 +540,7 @@ Added status polling instead of silent failures.
 
 ---
 
-# 📚 New Documentation
+# New Documentation
 
 Added to help users set up and troubleshoot:
 
@@ -576,7 +576,7 @@ DEX endpoints for API integrations.
 
 ---
 
-# 🚀 Running the System
+# Running the System
 
 ### Run Scanner
 
@@ -603,7 +603,7 @@ cargo run --release -p client -- --websocket
 
 ---
 
-# 📈 Performance Benchmarks
+# Performance Benchmarks
 
 ## Scanner
 
@@ -621,7 +621,7 @@ cargo run --release -p client -- --websocket
 
 ---
 
-# 🔮 Upcoming Features
+# Upcoming Features
 
 * Jito private mempool
 * Dynamic priority fees
@@ -631,7 +631,7 @@ cargo run --release -p client -- --websocket
 
 ---
 
-# 🤝 Contributing
+# Contributing
 
 Contributions welcome! Focus areas include:
 
@@ -642,13 +642,13 @@ Contributions welcome! Focus areas include:
 
 ---
 
-# 📜 License
+# License
 
 Same as original upstream repository.
 
 ---
 
-# 🙏 Credits
+# Credits
 
 Thanks to:
 
@@ -658,7 +658,7 @@ Thanks to:
 
 ---
 
-# 📌 Changelog Highlights
+# Changelog Highlights
 
 * Added scanner
 * Added Saber integration
