@@ -1,8 +1,3 @@
-#  Enhanced Fork
-
-This README documents **all major improvements, new modules, production features, bug fixes, and architectural updates** introduced in this fork of the Solana arbitrage bot. It is written for developers who want to understand the system, contribute to it, or deploy it in a real environment.
-
----
 
 # Overview
 
